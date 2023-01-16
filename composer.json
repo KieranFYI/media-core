@@ -30,6 +30,6 @@
         "kieranfyi/logging": "^0.3",
         "kieranfyi/roles-core": "^1.0",
         "ralouphie/mimey": "^1.0",
-        "kieranfyi/services-core": "^0.0.1"
+        "kieranfyi/services-core": "^0.0.3"
     }
 }
