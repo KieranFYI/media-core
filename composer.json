@@ -1,6 +1,7 @@
 {
     "name": "kieranfyi/media-core",
     "type": "project",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "KieranFYI\\Media\\Core\\": "src/"
