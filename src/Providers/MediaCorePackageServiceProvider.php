@@ -37,7 +37,7 @@ class MediaCorePackageServiceProvider extends ServiceProvider
 
         $this->publishes([
             $root . '/config/media.php' => config_path('media.php'),
-        ], ['roles', 'roles-config']);
+        ], ['media', 'media-config', 'config']);
 
         $this->mergeConfigFrom($root . '/config/media.php', 'media');
 
