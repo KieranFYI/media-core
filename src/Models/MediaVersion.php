@@ -10,6 +10,7 @@ use KieranFYI\Logging\Traits\LoggingTrait;
 use KieranFYI\Media\Core\Facades\MimeTypes;
 use KieranFYI\Misc\Traits\HasKeyTrait;
 use KieranFYI\Misc\Traits\ImmutableTrait;
+use KieranFYI\Roles\Core\Traits\BuildsAccess;
 use KieranFYI\Services\Core\Traits\Serviceable;
 
 /**
@@ -30,6 +31,7 @@ class MediaVersion extends Model
     use LoggingTrait;
     use HasKeyTrait;
     use Serviceable;
+    use BuildsAccess;
 
     /**
      * @var array|string[]

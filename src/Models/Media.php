@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use KieranFYI\Logging\Traits\LoggingTrait;
 use KieranFYI\Misc\Traits\ImmutableTrait;
+use KieranFYI\Roles\Core\Traits\BuildsAccess;
 use KieranFYI\Services\Core\Traits\Serviceable;
 
 /**
@@ -25,6 +26,7 @@ class Media extends Model
     use ImmutableTrait;
     use LoggingTrait;
     use Serviceable;
+    use BuildsAccess;
 
     const DISPOSITION_INLINE = 'inline';
     const DISPOSITION_ATTACHMENT = 'attachment';
