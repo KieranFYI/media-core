@@ -4,7 +4,6 @@ use KieranFYI\Media\Core\Models\Media;
 
 return [
     'default' => 'default',
-    'endpoint' => env('SERVICE_MEDIA_ENDPOINT'),
 
     'storages' => [
         'default' => [

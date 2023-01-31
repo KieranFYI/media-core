@@ -51,24 +51,4 @@ class MediaCorePackageServiceProvider extends ServiceProvider
         Event::listen(RegisterPermissionEvent::class, RegisterPermissionListener::class);
         Event::listen(RegisterRoleEvent::class, RegisterRolesListener::class);
     }
-
-    /**
-     * @return void
-     */
-    private function registerServiceEndpoints(): void
-    {
-        $endpoints = config('service.endpoints');
-        if (!empty(config('media.endpoint'))) {
-            $endpoint = config('media.endpoint');
-            if (!isset($endpoints[$endpoint])) {
-                $endpoints[$endpoint] = [];
-            }
-            $endpoints[$endpoint] = array_merge($endpoints[$endpoint], [
-                Media::class,
-                MediaVersion::class
-            ]);
-        }
-
-        config(['service.endpoints' => $endpoints]);
-    }
 }

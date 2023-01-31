@@ -34,7 +34,9 @@ class Media extends Model
     /**
      * @var array|string[]
      */
-    public array $whitelist = ['deleted_at'];
+    public array $whitelist = [
+        'deleted_at', 'model_id', 'model_type', 'updated_at'
+    ];
 
     /**
      * @var array|string[]
@@ -51,11 +53,16 @@ class Media extends Model
     ];
 
     /**
-     * @var string[]
+     * @var array|string[]
      */
-    protected $hidden = [
-        'model_id', 'model_type', 'user_id', 'user_type', 'deleted_at', 'storage', 'updated_at'
+    protected $visible = [
+        'id', 'file_name', 'modal', 'media', 'versions', 'created_at'
     ];
+
+    /**
+     * @var string
+     */
+    protected string $title = 'file_name';
 
     /**
      * @return MorphTo
