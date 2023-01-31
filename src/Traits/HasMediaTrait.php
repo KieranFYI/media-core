@@ -10,6 +10,8 @@ use KieranFYI\Media\Core\Models\Media;
 use TypeError;
 
 /**
+ * @property Media $media
+ *
  * @mixin Model
  */
 trait HasMediaTrait
