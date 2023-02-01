@@ -4,9 +4,11 @@ namespace KieranFYI\Media\Core\Services\Storage;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File as FileFacade;
 use Illuminate\Support\Facades\Storage;
 use KieranFYI\Media\Core\Exceptions\InvalidMediaStorageException;
 use KieranFYI\Media\Core\Models\Media;
@@ -66,14 +68,6 @@ class MediaStorage
     }
 
     /**
-     * @return bool
-     */
-    public function isPublic(): bool
-    {
-        return $this->config('public', false);
-    }
-
-    /**
      * @param string|null $key
      * @param mixed $default
      * @return array
@@ -92,18 +86,18 @@ class MediaStorage
     }
 
     /**
-     * @param string $filename
+     * @param MediaVersion $version
      * @return resource|null
      */
-    public function stream(string $filename)
+    public function stream(MediaVersion $version)
     {
-        return $this->disk()->readStream($this->fileName($filename));
+        return $this->disk()->readStream($this->fixPath($version->file_name));
     }
 
     /**
      * @return Filesystem
      */
-    private function disk(): Filesystem
+    public function disk(): Filesystem
     {
         if (is_null($this->disk)) {
             $this->disk = Storage::disk($this->config('disk'));
@@ -115,7 +109,7 @@ class MediaStorage
      * @param string $filename
      * @return string
      */
-    private function fileName(string $filename)
+    public function fixPath(string $filename): string
     {
         return trim(implode('/', [$this->config('root', ''), $filename]), '/');
     }
@@ -125,16 +119,12 @@ class MediaStorage
      * @param Model|null $parent
      * @return Media
      */
-    public function store(UploadedFile $file, Model $parent = null): Media
+    public function store(File|UploadedFile|string $file, Model $parent = null): Media
     {
         return DB::transaction(function () use ($file, $parent) {
-
-            $fileName = preg_replace('/[^A-Za-z0-9\-_.]/', '-', $file->getClientOriginalName());
-            $contentType = $file->getMimeType();
-
             $media = new Media([
                 'storage' => $this->storage,
-                'file_name' => $fileName
+                'file_name' => $this->filename($file)
             ]);
             $media->model()->associate($parent);
             $media->user()->associate(Auth::user());
@@ -143,7 +133,7 @@ class MediaStorage
             $mediaVersion = new MediaVersion([
                 'name' => 'default',
                 'storage' => $this->storage,
-                'content_type' => $contentType
+                'content_type' => $this->contentType($file)
             ]);
             $media->versions()->save($mediaVersion);
 
@@ -151,5 +141,33 @@ class MediaStorage
 
             return $media;
         });
+    }
+
+    /**
+     * @param File|UploadedFile|string $file
+     * @return string|null
+     */
+    public function contentType(File|UploadedFile|string $file): string|null
+    {
+        if (method_exists($file, 'getMimeType')) {
+            $type = $file->getMimeType();
+        } else {
+            $type = FileFacade::mimeType($file);
+        }
+
+        return empty($type) ? null : $type;
+    }
+
+    private function filename(File|UploadedFile|string $file): string|null
+    {
+        if ($file instanceof UploadedFile) {
+            $name = preg_replace('/[^A-Za-z0-9\-_.]/', '-', $file->getClientOriginalName());
+        } else if ($file instanceof File) {
+            $name = preg_replace('/[^A-Za-z0-9\-_.]/', '-', $file->getFilename());
+        } else {
+            $name = FileFacade::basename($file);
+        }
+
+        return empty($name) ? null : $name;
     }
 }
