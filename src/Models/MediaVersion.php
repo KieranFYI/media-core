@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use KieranFYI\Logging\Traits\LoggingTrait;
+use KieranFYI\Media\Core\Facades\MediaStorage;
 use KieranFYI\Media\Core\Facades\MimeTypes;
 use KieranFYI\Misc\Traits\HasKeyTrait;
 use KieranFYI\Misc\Traits\ImmutableTrait;
+use KieranFYI\Misc\Traits\KeyedTitle;
 use KieranFYI\Roles\Core\Traits\BuildsAccess;
 use KieranFYI\Services\Core\Traits\Serviceable;
 
@@ -23,6 +25,7 @@ use KieranFYI\Services\Core\Traits\Serviceable;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property null|Carbon $deleted_at
+ * @property resource|null $stream
  */
 class MediaVersion extends Model
 {
@@ -32,6 +35,7 @@ class MediaVersion extends Model
     use HasKeyTrait;
     use Serviceable;
     use BuildsAccess;
+    use KeyedTitle;
 
     /**
      * @var array|string[]
@@ -67,6 +71,11 @@ class MediaVersion extends Model
     ];
 
     /**
+     * @var string
+     */
+    protected string $title_key = 'name';
+
+    /**
      * @return BelongsTo
      */
     public function media(): BelongsTo
@@ -88,5 +97,13 @@ class MediaVersion extends Model
     public function getFileNameAttribute(): string
     {
         return $this->key . '.' . $this->extension;
+    }
+
+    /**
+     * @return resource|null
+     */
+    public function getStreamAttribute()
+    {
+        return MediaStorage::storage($this->storage)->stream($this);
     }
 }

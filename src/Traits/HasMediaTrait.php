@@ -3,7 +3,8 @@
 namespace KieranFYI\Media\Core\Traits;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use KieranFYI\Media\Core\Facades\MediaStorage;
 use KieranFYI\Media\Core\Models\Media;
@@ -18,18 +19,18 @@ trait HasMediaTrait
 {
 
     /**
-     * @return MorphTo
+     * @return MorphOne
      */
-    public function media(): MorphTo
+    public function media(): MorphOne
     {
-        return $this->morphTo();
+        return $this->morphOne(Media::class, 'model');
     }
 
     /**
-     * @param UploadedFile $file
+     * @param UploadedFile|string $file
      * @return Media
      */
-    public function attachMedia(UploadedFile $file): Media
+    public function attachMedia(File|UploadedFile|string $file): Media
     {
         $media = MediaStorage::storage($this->storage())->store($file, $this);
         $this->setRelation('media', $media);

@@ -5,6 +5,7 @@ namespace KieranFYI\Media\Core\Traits;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use KieranFYI\Media\Core\Facades\MediaStorage;
 use KieranFYI\Media\Core\Models\Media;
@@ -12,6 +13,7 @@ use TypeError;
 
 /**
  * @property Collection $media
+ * @property string $storage;
  *
  * @mixin Model
  */
@@ -27,13 +29,15 @@ trait HasManyMediaTrait
     }
 
     /**
-     * @param UploadedFile $file
+     * @param File|UploadedFile|string $file
      * @return Media
      */
-    public function attachMedia(UploadedFile $file): Media
+    public function attachMedia(File|UploadedFile|string $file): Media
     {
         $media = MediaStorage::storage($this->storage())->store($file, $this);
-        $this->setRelation('media', $media);
+        if ($this->relationLoaded('media')) {
+            $this->getRelation('media')->add($media);
+        }
         return $media;
     }
 

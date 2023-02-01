@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use KieranFYI\Logging\Traits\LoggingTrait;
 use KieranFYI\Misc\Traits\ImmutableTrait;
+use KieranFYI\Misc\Traits\KeyedTitle;
 use KieranFYI\Roles\Core\Traits\BuildsAccess;
 use KieranFYI\Services\Core\Traits\Serviceable;
 
@@ -27,6 +28,7 @@ class Media extends Model
     use LoggingTrait;
     use Serviceable;
     use BuildsAccess;
+    use KeyedTitle;
 
     const DISPOSITION_INLINE = 'inline';
     const DISPOSITION_ATTACHMENT = 'attachment';
@@ -62,7 +64,7 @@ class Media extends Model
     /**
      * @var string
      */
-    protected string $title = 'file_name';
+    protected string $title_key = 'file_name';
 
     /**
      * @return MorphTo
