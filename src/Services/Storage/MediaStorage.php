@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Storage;
 use KieranFYI\Media\Core\Exceptions\InvalidMediaStorageException;
 use KieranFYI\Media\Core\Models\Media;
 use KieranFYI\Media\Core\Models\MediaVersion;
+use KieranFYI\Misc\Facades\Cacheable;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MediaStorage
 {
@@ -30,6 +32,9 @@ class MediaStorage
      * @var Filesystem|null
      */
     private ?Filesystem $disk = null;
+
+    const DISPOSITION_INLINE = 'inline';
+    const DISPOSITION_ATTACHMENT = 'attachment';
 
     /**
      * @throws InvalidMediaStorageException
@@ -82,7 +87,7 @@ class MediaStorage
      */
     public function disposition(): string
     {
-        return $this->config('disposition', Media::DISPOSITION_ATTACHMENT);
+        return $this->config('disposition', self::DISPOSITION_ATTACHMENT);
     }
 
     /**
@@ -92,6 +97,30 @@ class MediaStorage
     public function stream(MediaVersion $version)
     {
         return $this->disk()->readStream($this->fixPath($version->file_name));
+    }
+
+    /**
+     * @param MediaVersion $version
+     * @param string $extension
+     * @return StreamedResponse
+     * @throws InvalidMediaStorageException
+     */
+    public function response(MediaVersion $version, string $extension): StreamedResponse
+    {
+        Cacheable::cached($version->updated_at);
+        if ($version->extension !== $extension) {
+            abort(404);
+        }
+
+
+        return response()->streamDownload(
+            function () use ($version) {
+                while (ob_get_level() > 0) ob_end_flush();
+                fpassthru($version->stream);
+            },
+            $version->file_name,
+            disposition: $this->storage($version->storage)->disposition()
+        );
     }
 
     /**

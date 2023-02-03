@@ -54,12 +54,6 @@ class MediaTest extends TestCase
         $this->assertContains(KeyedTitle::class, $uses);
     }
 
-    public function testDisposition()
-    {
-        $this->assertEquals('inline', Media::DISPOSITION_INLINE);
-        $this->assertEquals('attachment', Media::DISPOSITION_ATTACHMENT);
-    }
-
     public function testWhitelist()
     {
         $expected = [
@@ -94,6 +88,7 @@ class MediaTest extends TestCase
 
     public function testModel()
     {
+        $this->artisan('migrate');
         $this->assertInstanceOf(MorphTo::class, $this->model->model());
         $testModel = TestModel::create([]);
         $this->model->model()->associate($testModel);
@@ -102,6 +97,7 @@ class MediaTest extends TestCase
 
     public function testUser()
     {
+        $this->artisan('migrate');
         $this->assertInstanceOf(MorphTo::class, $this->model->user());
         $testModel = TestModel::create([]);
         $this->model->user()->associate($testModel);

@@ -30,9 +30,6 @@ class Media extends Model
     use BuildsAccess;
     use KeyedTitle;
 
-    const DISPOSITION_INLINE = 'inline';
-    const DISPOSITION_ATTACHMENT = 'attachment';
-
     /**
      * @var array|string[]
      */

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Facade;
 use KieranFYI\Media\Core\Models\Media;
+use KieranFYI\Media\Core\Models\MediaVersion;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * @method static \KieranFYI\Media\Core\Services\Storage\MediaStorage storage(?string $storage = null)
@@ -14,6 +16,7 @@ use KieranFYI\Media\Core\Models\Media;
  * @method static string disposition()
  * @method static string handler()
  * @method static Media store(UploadedFile $file, Model $parent = null)
+ * @method static StreamedResponse response(MediaVersion $version, string $extension)
  */
 class MediaStorage extends Facade
 {
