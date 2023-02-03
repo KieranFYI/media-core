@@ -18,6 +18,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MediaStorage
 {
+    const DISPOSITION_INLINE = 'inline';
+    const DISPOSITION_ATTACHMENT = 'attachment';
+
     /**
      * @var string
      */
@@ -27,14 +30,11 @@ class MediaStorage
      * @var array|null
      */
     private ?array $config;
-
+    
     /**
      * @var Filesystem|null
      */
     private ?Filesystem $disk = null;
-
-    const DISPOSITION_INLINE = 'inline';
-    const DISPOSITION_ATTACHMENT = 'attachment';
 
     /**
      * @throws InvalidMediaStorageException
@@ -73,6 +73,26 @@ class MediaStorage
     }
 
     /**
+     * @param MediaVersion $version
+     * @return resource|null
+     */
+    public function stream(MediaVersion $version)
+    {
+        return $this->disk()->readStream($this->fixPath($version->file_name));
+    }
+
+    /**
+     * @return Filesystem
+     */
+    public function disk(): Filesystem
+    {
+        if (is_null($this->disk)) {
+            $this->disk = Storage::disk($this->config('disk'));
+        }
+        return $this->disk;
+    }
+
+    /**
      * @param string|null $key
      * @param mixed $default
      * @return array
@@ -83,20 +103,12 @@ class MediaStorage
     }
 
     /**
+     * @param string $filename
      * @return string
      */
-    public function disposition(): string
+    public function fixPath(string $filename): string
     {
-        return $this->config('disposition', self::DISPOSITION_ATTACHMENT);
-    }
-
-    /**
-     * @param MediaVersion $version
-     * @return resource|null
-     */
-    public function stream(MediaVersion $version)
-    {
-        return $this->disk()->readStream($this->fixPath($version->file_name));
+        return trim(implode('/', [$this->config('root', ''), $filename]), '/');
     }
 
     /**
@@ -124,23 +136,11 @@ class MediaStorage
     }
 
     /**
-     * @return Filesystem
-     */
-    public function disk(): Filesystem
-    {
-        if (is_null($this->disk)) {
-            $this->disk = Storage::disk($this->config('disk'));
-        }
-        return $this->disk;
-    }
-
-    /**
-     * @param string $filename
      * @return string
      */
-    public function fixPath(string $filename): string
+    public function disposition(): string
     {
-        return trim(implode('/', [$this->config('root', ''), $filename]), '/');
+        return $this->config('disposition', self::DISPOSITION_ATTACHMENT);
     }
 
     /**
@@ -176,17 +176,6 @@ class MediaStorage
      * @param File|UploadedFile|string $file
      * @return string|null
      */
-    public function contentType(File|UploadedFile|string $file): string|null
-    {
-        if (method_exists($file, 'getMimeType')) {
-            $type = $file->getMimeType();
-        } else {
-            $type = FileFacade::mimeType($file);
-        }
-
-        return empty($type) ? null : $type;
-    }
-
     private function filename(File|UploadedFile|string $file): string|null
     {
         if ($file instanceof UploadedFile) {
@@ -198,5 +187,20 @@ class MediaStorage
         }
 
         return empty($name) ? null : $name;
+    }
+
+    /**
+     * @param File|UploadedFile|string $file
+     * @return string|null
+     */
+    public function contentType(File|UploadedFile|string $file): string|null
+    {
+        if (method_exists($file, 'getMimeType')) {
+            $type = $file->getMimeType();
+        } else {
+            $type = FileFacade::mimeType($file);
+        }
+
+        return empty($type) ? null : $type;
     }
 }

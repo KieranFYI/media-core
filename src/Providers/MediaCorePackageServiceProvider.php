@@ -7,7 +7,6 @@ use Illuminate\Support\ServiceProvider;
 use KieranFYI\Media\Core\Listeners\RegisterPermissionListener;
 use KieranFYI\Media\Core\Listeners\RegisterRolesListener;
 use KieranFYI\Media\Core\Models\Media;
-use KieranFYI\Media\Core\Models\MediaVersion;
 use KieranFYI\Media\Core\Policies\MediaPolicy;
 use KieranFYI\Media\Core\Services\Storage\MediaStorage;
 use KieranFYI\Roles\Core\Events\Register\RegisterPermissionEvent;

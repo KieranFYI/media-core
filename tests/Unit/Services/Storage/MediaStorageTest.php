@@ -71,7 +71,8 @@ class MediaStorageTest extends TestCase
         $storage->response(new MediaVersion(['extension' => 'png']), 'test');
     }
 
-    public function testResponseWithVersion() {
+    public function testResponseWithVersion()
+    {
         $this->artisan('migrate');
         $storage = new MediaStorage();
         $media = $storage->store(UploadedFile::fake()->image('test.png'));
