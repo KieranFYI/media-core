@@ -1,19 +1,19 @@
 <?php
 
-use KieranFYI\Media\Core\Models\Media;
+use KieranFYI\Media\Core\Services\Storage\MediaStorage;
 
 return [
     'default' => 'default',
 
     'storages' => [
         'default' => [
-            'disposition' => Media::DISPOSITION_ATTACHMENT,
+            'disposition' => MediaStorage::DISPOSITION_ATTACHMENT,
             'disk' => 'local',
             'root' => 'default'
         ],
 
         'images' => [
-            'disposition' => Media::DISPOSITION_INLINE,
+            'disposition' => MediaStorage::DISPOSITION_INLINE,
             //'job' => ImageMediaJob::class,
             'disk' => 'local',
             'root' => 'images',
@@ -34,7 +34,7 @@ return [
         ],
 
         'videos' => [
-            'disposition' => Media::DISPOSITION_INLINE,
+            'disposition' => MediaStorage::DISPOSITION_INLINE,
             //'job' => VideoMediaService::class,
             'disk' => 'local',
             'root' => 'videos',

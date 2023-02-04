@@ -13,9 +13,14 @@ use Illuminate\Support\Facades\Storage;
 use KieranFYI\Media\Core\Exceptions\InvalidMediaStorageException;
 use KieranFYI\Media\Core\Models\Media;
 use KieranFYI\Media\Core\Models\MediaVersion;
+use KieranFYI\Misc\Facades\Cacheable;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MediaStorage
 {
+    const DISPOSITION_INLINE = 'inline';
+    const DISPOSITION_ATTACHMENT = 'attachment';
+
     /**
      * @var string
      */
@@ -25,7 +30,7 @@ class MediaStorage
      * @var array|null
      */
     private ?array $config;
-
+    
     /**
      * @var Filesystem|null
      */
@@ -68,24 +73,6 @@ class MediaStorage
     }
 
     /**
-     * @param string|null $key
-     * @param mixed $default
-     * @return array
-     */
-    public function config(?string $key = null, mixed $default = null): mixed
-    {
-        return data_get($this->config, $key, $default);
-    }
-
-    /**
-     * @return string
-     */
-    public function disposition(): string
-    {
-        return $this->config('disposition', Media::DISPOSITION_ATTACHMENT);
-    }
-
-    /**
      * @param MediaVersion $version
      * @return resource|null
      */
@@ -106,12 +93,54 @@ class MediaStorage
     }
 
     /**
+     * @param string|null $key
+     * @param mixed $default
+     * @return array
+     */
+    public function config(?string $key = null, mixed $default = null): mixed
+    {
+        return data_get($this->config, $key, $default);
+    }
+
+    /**
      * @param string $filename
      * @return string
      */
     public function fixPath(string $filename): string
     {
         return trim(implode('/', [$this->config('root', ''), $filename]), '/');
+    }
+
+    /**
+     * @param MediaVersion $version
+     * @param string $extension
+     * @return StreamedResponse
+     * @throws InvalidMediaStorageException
+     */
+    public function response(MediaVersion $version, string $extension): StreamedResponse
+    {
+        Cacheable::cached($version->updated_at);
+        if ($version->extension !== $extension) {
+            abort(404);
+        }
+
+
+        return response()->streamDownload(
+            function () use ($version) {
+                while (ob_get_level() > 0) ob_end_flush();
+                fpassthru($version->stream);
+            },
+            $version->file_name,
+            disposition: $this->storage($version->storage)->disposition()
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function disposition(): string
+    {
+        return $this->config('disposition', self::DISPOSITION_ATTACHMENT);
     }
 
     /**
@@ -147,17 +176,6 @@ class MediaStorage
      * @param File|UploadedFile|string $file
      * @return string|null
      */
-    public function contentType(File|UploadedFile|string $file): string|null
-    {
-        if (method_exists($file, 'getMimeType')) {
-            $type = $file->getMimeType();
-        } else {
-            $type = FileFacade::mimeType($file);
-        }
-
-        return empty($type) ? null : $type;
-    }
-
     private function filename(File|UploadedFile|string $file): string|null
     {
         if ($file instanceof UploadedFile) {
@@ -169,5 +187,20 @@ class MediaStorage
         }
 
         return empty($name) ? null : $name;
+    }
+
+    /**
+     * @param File|UploadedFile|string $file
+     * @return string|null
+     */
+    public function contentType(File|UploadedFile|string $file): string|null
+    {
+        if (method_exists($file, 'getMimeType')) {
+            $type = $file->getMimeType();
+        } else {
+            $type = FileFacade::mimeType($file);
+        }
+
+        return empty($type) ? null : $type;
     }
 }

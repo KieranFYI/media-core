@@ -3,7 +3,6 @@
 namespace KieranFYI\Tests\Media\Core\Unit\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use KieranFYI\Logging\Traits\LoggingTrait;
 use KieranFYI\Media\Core\Models\MediaVersion;
@@ -12,7 +11,6 @@ use KieranFYI\Misc\Traits\ImmutableTrait;
 use KieranFYI\Misc\Traits\KeyedTitle;
 use KieranFYI\Roles\Core\Traits\BuildsAccess;
 use KieranFYI\Services\Core\Traits\Serviceable;
-use KieranFYI\Tests\Media\Core\Models\TestModel;
 use KieranFYI\Tests\Media\Core\TestCase;
 
 class MediaVersionTest extends TestCase
@@ -23,15 +21,6 @@ class MediaVersionTest extends TestCase
      * @var MediaVersion
      */
     private MediaVersion $model;
-
-    /**
-     * Setup the test environment.
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->model = new MediaVersion();
-    }
 
     public function testClass()
     {
@@ -129,5 +118,14 @@ class MediaVersionTest extends TestCase
         /** @var MediaVersion $version */
         $version = $media->versions->first();
         $this->assertIsResource($version->stream);
+    }
+
+    /**
+     * Setup the test environment.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->model = new MediaVersion();
     }
 }

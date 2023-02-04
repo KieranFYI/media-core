@@ -24,20 +24,6 @@ class MediaTest extends TestCase
      */
     private Media $model;
 
-    /**
-     * Setup the test environment.
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->model = new Media();
-        Schema::create('test_models', function ($table) {
-            $table->temporary();
-            $table->id();
-            $table->timestamps();
-        });
-    }
-
     public function testClass()
     {
         $this->assertInstanceOf(Model::class, $this->model);
@@ -52,12 +38,6 @@ class MediaTest extends TestCase
         $this->assertContains(Serviceable::class, $uses);
         $this->assertContains(BuildsAccess::class, $uses);
         $this->assertContains(KeyedTitle::class, $uses);
-    }
-
-    public function testDisposition()
-    {
-        $this->assertEquals('inline', Media::DISPOSITION_INLINE);
-        $this->assertEquals('attachment', Media::DISPOSITION_ATTACHMENT);
     }
 
     public function testWhitelist()
@@ -94,6 +74,7 @@ class MediaTest extends TestCase
 
     public function testModel()
     {
+        $this->artisan('migrate');
         $this->assertInstanceOf(MorphTo::class, $this->model->model());
         $testModel = TestModel::create([]);
         $this->model->model()->associate($testModel);
@@ -102,9 +83,24 @@ class MediaTest extends TestCase
 
     public function testUser()
     {
+        $this->artisan('migrate');
         $this->assertInstanceOf(MorphTo::class, $this->model->user());
         $testModel = TestModel::create([]);
         $this->model->user()->associate($testModel);
         $testModel->is($this->model->user);
+    }
+
+    /**
+     * Setup the test environment.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->model = new Media();
+        Schema::create('test_models', function ($table) {
+            $table->temporary();
+            $table->id();
+            $table->timestamps();
+        });
     }
 }

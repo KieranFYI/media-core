@@ -3,7 +3,6 @@
 namespace KieranFYI\Tests\Media\Core\Unit\Traits;
 
 use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Schema;
 use KieranFYI\Media\Core\Models\Media;
 use KieranFYI\Tests\Media\Core\Models\HasMediaModel;
