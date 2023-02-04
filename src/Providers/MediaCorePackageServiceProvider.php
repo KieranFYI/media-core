@@ -2,11 +2,13 @@
 
 namespace KieranFYI\Media\Core\Providers;
 
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use KieranFYI\Media\Core\Listeners\RegisterPermissionListener;
 use KieranFYI\Media\Core\Listeners\RegisterRolesListener;
 use KieranFYI\Media\Core\Models\Media;
+use KieranFYI\Media\Core\Models\MediaVersion;
 use KieranFYI\Media\Core\Policies\MediaPolicy;
 use KieranFYI\Media\Core\Services\Storage\MediaStorage;
 use KieranFYI\Roles\Core\Events\Register\RegisterPermissionEvent;
@@ -32,6 +34,11 @@ class MediaCorePackageServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Relation::morphMap([
+            'media' => Media::class,
+            'mediaVersion' => MediaVersion::class
+        ]);
+
         $root = __DIR__ . '/../..';
 
         $this->publishes([
