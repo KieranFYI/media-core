@@ -32,7 +32,7 @@ class MediaVersionController extends Controller
      * @return StreamedResponse
      * @throws Throwable
      */
-    public function show(MediaVersion $version, string $extension): StreamedResponse
+    public function show(Media $media, MediaVersion $version, string $extension): StreamedResponse
     {
         return MediaStorage::response($version, $extension);
     }
