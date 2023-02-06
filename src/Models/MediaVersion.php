@@ -114,8 +114,17 @@ class MediaVersion extends Model
     public function getAdminUrlAttribute(): string
     {
         return route('admin.media.version.show', [
+            'media' => $this->media_id,
             'version' => $this,
             'extension' => $this->extension,
         ]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return $this->getKeyName();
     }
 }

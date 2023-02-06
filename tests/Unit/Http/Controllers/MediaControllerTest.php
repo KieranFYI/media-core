@@ -26,7 +26,7 @@ class MediaControllerTest extends TestCase
     {
         $this->artisan('migrate');
         $media = MediaStorage::store(UploadedFile::fake()->image('test.png'));
-        $response = $this->controller->show($media->versions->first(), 'png');
+        $response = $this->controller->show($media, $media->versions->first(), 'png');
         $this->assertInstanceOf(StreamedResponse::class, $response);
     }
 

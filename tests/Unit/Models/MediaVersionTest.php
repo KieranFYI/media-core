@@ -141,6 +141,7 @@ class MediaVersionTest extends TestCase
         $this->assertIsString($version->getAdminUrlAttribute());
         $this->assertIsString($version->admin_url);
         $this->assertEquals(route('admin.media.version.show', [
+            'media' => $media,
             'version' => $version,
             'extension' => $version->extension,
         ]), $version->admin_url);
