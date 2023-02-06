@@ -3,6 +3,7 @@
 namespace KieranFYI\Media\Core\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -27,6 +28,7 @@ use KieranFYI\Services\Core\Traits\Serviceable;
  * @property null|Carbon $deleted_at
  * @property resource|null $stream
  * @property string $admin_url
+ * @property Collection $media
  */
 class MediaVersion extends Model
 {
@@ -81,7 +83,8 @@ class MediaVersion extends Model
      */
     public function media(): BelongsTo
     {
-        return $this->belongsTo(Media::class);
+        return $this->belongsTo(Media::class)
+            ->setEagerLoads([]);
     }
 
     /**

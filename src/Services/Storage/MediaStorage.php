@@ -30,7 +30,7 @@ class MediaStorage
      * @var array|null
      */
     private ?array $config;
-    
+
     /**
      * @var Filesystem|null
      */
@@ -123,15 +123,17 @@ class MediaStorage
         if ($version->extension !== $extension) {
             abort(404);
         }
+        $version->load('media');
 
-
-        return response()->streamDownload(
+        return response()->stream(
             function () use ($version) {
                 while (ob_get_level() > 0) ob_end_flush();
                 fpassthru($version->stream);
             },
-            $version->file_name,
-            disposition: $this->storage($version->storage)->disposition()
+            headers: [
+                'Content-Type' => $version->content_type,
+                'Content-Disposition' => $this->storage($version->storage)->disposition() . '; filename="' . $version->file_name . '"'
+            ]
         );
     }
 
