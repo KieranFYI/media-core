@@ -37,7 +37,7 @@ class MediaStorageTest extends TestCase
     {
         $storage = new MediaStorage();
         $expected = [
-            'disposition' => MediaStorage::DISPOSITION_ATTACHMENT,
+            'disposition' => MediaStorage::DISPOSITION_INLINE,
             'disk' => 'local',
             'root' => 'default'
         ];
@@ -47,7 +47,7 @@ class MediaStorageTest extends TestCase
     public function testDisposition()
     {
         $storage = new MediaStorage();
-        $this->assertEquals(MediaStorage::DISPOSITION_ATTACHMENT, $storage->disposition());
+        $this->assertEquals(MediaStorage::DISPOSITION_INLINE, $storage->disposition());
     }
 
     /**

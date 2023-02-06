@@ -7,7 +7,7 @@ return [
 
     'storages' => [
         'default' => [
-            'disposition' => MediaStorage::DISPOSITION_ATTACHMENT,
+            'disposition' => MediaStorage::DISPOSITION_INLINE,
             'disk' => 'local',
             'root' => 'default'
         ],
