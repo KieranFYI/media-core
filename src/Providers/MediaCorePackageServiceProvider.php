@@ -39,7 +39,7 @@ class MediaCorePackageServiceProvider extends ServiceProvider
             'mediaVersion' => MediaVersion::class
         ]);
 
-        $root = __DIR__ . '/../..';
+        $root = realpath(__DIR__ . '/../..');
 
         $this->publishes([
             $root . '/config/media.php' => config_path('media.php'),
@@ -51,6 +51,7 @@ class MediaCorePackageServiceProvider extends ServiceProvider
         $this->app->bind('mediaStorage', MediaStorage::class);
 
         $this->loadMigrationsFrom($root . '/database/migrations');
+        $this->loadRoutesFrom($root . '/routes/web.php');
 
         $this->registerPolicies();
 

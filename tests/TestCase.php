@@ -3,6 +3,7 @@
 namespace KieranFYI\Tests\Media\Core;
 
 use Illuminate\Foundation\Application;
+use KieranFYI\Admin\Providers\AdminPackageServiceProvider;
 use KieranFYI\Logging\Providers\LoggingPackageServiceProvider;
 use KieranFYI\Media\Core\Providers\MediaCorePackageServiceProvider;
 use KieranFYI\Misc\Providers\MiscPackageServiceProvider;
@@ -33,6 +34,7 @@ class TestCase extends OrchestraTestCase
             LoggingPackageServiceProvider::class,
             ServicesCorePackageServiceProvider::class,
             RolesCorePackageServiceProvider::class,
+            AdminPackageServiceProvider::class,
             MediaCorePackageServiceProvider::class,
         ];
     }

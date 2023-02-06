@@ -22,6 +22,15 @@ class MediaVersionTest extends TestCase
      */
     private MediaVersion $model;
 
+    /**
+     * Setup the test environment.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->model = new MediaVersion();
+    }
+
     public function testClass()
     {
         $this->assertInstanceOf(Model::class, $this->model);
@@ -109,7 +118,7 @@ class MediaVersionTest extends TestCase
         $this->assertEquals('test.png', $this->model->getFileNameAttribute());
     }
 
-    public function testStream()
+    public function testGetStreamAttribute()
     {
         $this->artisan('migrate');
 
@@ -117,15 +126,23 @@ class MediaVersionTest extends TestCase
         $media = $storage->store(__DIR__ . '/../../files/textfile.txt');
         /** @var MediaVersion $version */
         $version = $media->versions->first();
+        $this->assertIsResource($version->getStreamAttribute());
         $this->assertIsResource($version->stream);
     }
 
-    /**
-     * Setup the test environment.
-     */
-    protected function setUp(): void
+    public function testAdminGetUrlAttribute()
     {
-        parent::setUp();
-        $this->model = new MediaVersion();
+        $this->artisan('migrate');
+
+        $storage = new MediaStorage();
+        $media = $storage->store(__DIR__ . '/../../files/textfile.txt');
+        /** @var MediaVersion $version */
+        $version = $media->versions->first();
+        $this->assertIsString($version->getAdminUrlAttribute());
+        $this->assertIsString($version->admin_url);
+        $this->assertEquals(route('admin.media.version.show', [
+            'version' => $version,
+            'extension' => $version->extension,
+        ]), $version->admin_url);
     }
 }

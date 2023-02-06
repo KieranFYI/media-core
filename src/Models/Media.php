@@ -20,6 +20,7 @@ use KieranFYI\Services\Core\Traits\Serviceable;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property null|Carbon $deleted_at
+ * @property null|string $admin_url
  */
 class Media extends Model
 {
@@ -85,5 +86,13 @@ class Media extends Model
     public function versions(): HasMany
     {
         return $this->hasMany(MediaVersion::class);
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdminUrlAttribute(): string
+    {
+        return $this->versions->value('admin_url');
     }
 }

@@ -101,6 +101,16 @@ class MediaStorageTest extends TestCase
         $this->assertInstanceOf(Media::class, $media);
     }
 
+    public function testStoreVersions()
+    {
+        $this->artisan('migrate');
+
+        $storage = new MediaStorage();
+        $media = $storage->store(__DIR__ . '/../../../files/textfile.txt');
+        $this->assertInstanceOf(Media::class, $media);
+        $this->assertTrue($media->relationLoaded('versions'));
+    }
+
     public function testStoreUploadedFile()
     {
         $this->artisan('migrate');
