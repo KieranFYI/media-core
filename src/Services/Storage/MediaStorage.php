@@ -165,6 +165,7 @@ class MediaStorage
                 'content_type' => $this->contentType($file)
             ]);
             $media->versions()->save($mediaVersion);
+            $media->load('versions');
 
             $this->disk()->putFileAs($this->config('root', ''), $file, $mediaVersion->file_name);
 

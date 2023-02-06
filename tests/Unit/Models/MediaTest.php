@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Schema;
 use KieranFYI\Logging\Traits\LoggingTrait;
 use KieranFYI\Media\Core\Models\Media;
+use KieranFYI\Media\Core\Models\MediaVersion;
+use KieranFYI\Media\Core\Services\Storage\MediaStorage;
 use KieranFYI\Misc\Traits\ImmutableTrait;
 use KieranFYI\Misc\Traits\KeyedTitle;
 use KieranFYI\Roles\Core\Traits\BuildsAccess;
@@ -17,7 +19,19 @@ use KieranFYI\Tests\Media\Core\TestCase;
 
 class MediaTest extends TestCase
 {
-
+    /**
+     * Setup the test environment.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->model = new Media();
+        Schema::create('test_models', function ($table) {
+            $table->temporary();
+            $table->id();
+            $table->timestamps();
+        });
+    }
 
     /**
      * @var Media
@@ -90,17 +104,19 @@ class MediaTest extends TestCase
         $testModel->is($this->model->user);
     }
 
-    /**
-     * Setup the test environment.
-     */
-    protected function setUp(): void
+    public function testGetAdminUrlAttribute()
     {
-        parent::setUp();
-        $this->model = new Media();
-        Schema::create('test_models', function ($table) {
-            $table->temporary();
-            $table->id();
-            $table->timestamps();
-        });
+        $this->artisan('migrate');
+
+        $storage = new MediaStorage();
+        $media = $storage->store(__DIR__ . '/../../files/textfile.txt');
+        /** @var MediaVersion $version */
+        $version = $media->versions->first();
+        $this->assertIsString($media->getAdminUrlAttribute());
+        $this->assertIsString($media->admin_url);
+        $this->assertEquals(route('admin.media.version.show', [
+            'version' => $version,
+            'extension' => $version->extension,
+        ]), $media->admin_url);
     }
 }

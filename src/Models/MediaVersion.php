@@ -26,6 +26,7 @@ use KieranFYI\Services\Core\Traits\Serviceable;
  * @property Carbon $updated_at
  * @property null|Carbon $deleted_at
  * @property resource|null $stream
+ * @property string $admin_url
  */
 class MediaVersion extends Model
 {
@@ -105,5 +106,16 @@ class MediaVersion extends Model
     public function getStreamAttribute()
     {
         return MediaStorage::storage($this->storage)->stream($this);
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdminUrlAttribute(): string
+    {
+        return route('admin.media.version.show', [
+            'version' => $this,
+            'extension' => $this->extension,
+        ]);
     }
 }
